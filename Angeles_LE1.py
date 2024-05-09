@@ -184,7 +184,21 @@ def admin_login():
 
 # Admin menu
 def admin_menu():
-    pass
+    while True:
+        separator()
+        print("Admin Menu:")
+        print("1. Display Games in Stock\n2. Update Game Details\n3. Log Out")
+        choice = input("Choose the number of the operation you want to do: ")
+        if choice == "1":
+            display_available_games()
+            input("\nPress Enter to Continue...")
+        elif choice == "2":
+            admin_update_game()
+        elif choice == "3":
+            return
+        else:
+            print("Invalid input. Please enter a valid input.")
+            input("Press Enter to Continue...")
 
 def display_points(username):
     print(f"Points: {user_accounts[username]["points"]}")
