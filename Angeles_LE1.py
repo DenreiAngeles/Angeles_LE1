@@ -225,13 +225,28 @@ def redeem_free_rental(username):
             input("Press Enter to continue...")
         break
 
-# Function to display game inventory
-def display_game_inventory():
-    pass
-
 # Function to handle user's logged-in menu
 def logged_in_menu(username):
-    pass
+    while True:
+        separator()
+        print(f"Welcome Back, {username}!")
+        print("What would you like to do today?")
+        print(f"\nCredits: {user_accounts[username]["balance"]}\tPoints: {user_accounts[username]["points"]}\n")
+        print("1. Top Up\n2. Rent Games\n3. Return Games\n4. Redeem Free Rental\n5. Log Out")
+        choice = input("Enter the number of what you want to do: ")
+        if choice == "1":
+            top_up_account(username)
+        elif choice == "2":
+            rent_game(username)
+        elif choice == "3":
+            return_game(username)
+        elif choice == "4":
+            redeem_free_rental(username)
+        elif choice == "5":
+            break
+        else:
+            print("Invalid Input. Please enter a valid input.")
+            input("Press Enter to continue...")
 
 # Function to check user credentials
 def check_credentials(username, password):
@@ -239,7 +254,30 @@ def check_credentials(username, password):
     
 # Main function to run the program
 def main():
-    pass
+    while True:
+        separator()
+        print("Rent-a-Game")
+        print("\nWelcome to Rent-a-Game! What would you like to do today?")
+        print("1. Display Available Games\n2. Register\n3. Log In\n4. Admin Log In\n5. Exit ")
+        choice = input("Enter the number of what you want to do: ")
+        if choice == "1":
+            display_available_games()
+            input("\nPress Enter to Continue...")
+        elif choice == "2":
+            register_user()
+        elif choice == "3":
+            login = log_in_user()
+            if login:
+                logged_in_menu(login)
+        elif choice == "4":
+            admin_login()
+        elif choice == "5":
+            print("Thank you for your patronage!")
+            break
+        else:
+            print("Invalid Input. Please enter a valid input.")
+            input("Press Enter to Continue...")
+            continue
 
 if __name__ == "__main__":
     main()
