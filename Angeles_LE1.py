@@ -23,7 +23,7 @@ def display_available_games():
     for index, (games, details) in enumerate(game_library.items(), start = 1):
         copies = details["quantity"]
         cost = details["cost"]
-    print(f"{index}. {games}\n\t>>copies: {copies}\n\t>>cost: {cost}")
+        print(f"{index}. {games}\n\t>>copies: {copies}\n\t>>cost: {cost}")
 
 # Function to register a new user
 def register_user():
