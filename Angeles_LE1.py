@@ -27,7 +27,41 @@ def display_available_games():
 
 # Function to register a new user
 def register_user():
-    pass
+    separator()
+    print("Register:")
+    username = input("Enter New Username: ")
+    if username == "":
+        return
+    if username in user_accounts:
+        print("Username already taken. Please use another username.")
+        input("Press Enter to continue...")
+        return
+    password = input("Enter New Password: ")
+    if password == "":
+        return
+    user_accounts[username] = {"username": username, "password": password, "balance": 1.0, "points": 0, "excess_pts": 0, "inventory": []}
+    print("Account Successfully Created! Proceed to Login.")
+    input("Press Enter to continue...")
+
+def log_in_user():
+    separator()
+    print("Log In:")
+    username = input("Enter your username: ")
+    if username == "":
+        return
+    if username not in user_accounts:
+        print("Username not found. Please Register.")
+        input("Press Enter to continue...")
+        return
+    while True:
+        password = input("Enter your password: ")
+        if password == "":
+            return
+        if password != user_accounts[username]["password"]:
+            print("Incorrect Password")
+            input("Press Enter to continue...")
+            continue
+        return username
 
 # Function to rent a game
 def rent_game(username):
