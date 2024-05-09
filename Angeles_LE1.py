@@ -13,9 +13,17 @@ user_accounts = {}
 admin_username = "admin"
 admin_password = "adminpass"
 
+def separator():
+    print("-"*100)
+
 # Function to display available games with their numbers and rental costs
 def display_available_games():
-    pass
+    separator()
+    print("Available Games:")
+    for index, (games, details) in enumerate(game_library.items(), start = 1):
+        copies = details["quantity"]
+        cost = details["cost"]
+    print(f"{index}. {games}\n\t>>copies: {copies}\n\t>>cost: {cost}")
 
 # Function to register a new user
 def register_user():
