@@ -170,7 +170,17 @@ def admin_update_game(username):
 
 # Function for admin login
 def admin_login():
-    pass
+    separator()
+    print("Admin Log In:")
+    username = input("Enter Username: ")
+    if username != admin_username:
+        print("Incorrect username.")
+        return
+    password = input("Enter Password: ")
+    if password != admin_password:
+        print("Incorrect password.")
+        return
+    return True
 
 # Admin menu
 def admin_menu():
@@ -236,10 +246,6 @@ def logged_in_menu(username):
         else:
             print("Invalid Input. Please enter a valid input.")
             input("Press Enter to continue...")
-
-# Function to check user credentials
-def check_credentials(username, password):
-    pass
     
 # Main function to run the program
 def main():
@@ -260,6 +266,8 @@ def main():
                 logged_in_menu(login)
         elif choice == "4":
             admin_login()
+            if admin_login() == True:
+                admin_menu()
         elif choice == "5":
             print("Thank you for your patronage!")
             break
