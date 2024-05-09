@@ -1,8 +1,8 @@
 # Dictionary to store game library with their quantities and rental costs
 game_library = {
-    "Donkey Kong": {"quantity": 3, "cost": 2},
-    "Super Mario Bros": {"quantity": 5, "cost": 3},
-    "Tetris": {"quantity": 2, "cost": 1},
+    "Donkey Kong": {"quantity": 3, "cost": 2.25},
+    "Super Mario Bros": {"quantity": 5, "cost": 3.40},
+    "Tetris": {"quantity": 2, "cost": 1.50},
     # Add more games as needed
 }
 
@@ -64,8 +64,16 @@ def log_in_user():
         return username
 
 def display_balance(username):
-    credits = user_accounts[username]["balance"]
-    print(f"\nCredits: {credits:.2f}\n")
+    balance = user_accounts[username]["balance"]
+    print(f"\nCredits: {balance:.2f}\n")
+
+def excess_points_system(username, game):
+    decimal_excess = game_library[game]["cost"] - int(game_library[game]["cost"])
+    excess = game_library[game]["cost"] - ((game_library[game]["cost"] // 2)*2)
+    user_accounts[username]["excess_pts"] += (excess)
+    if user_accounts[username]["excess_pts"] >= 2:
+        user_accounts[username]["points"] += user_accounts[username]["excess_pts"] // 2
+        user_accounts[username]["excess_pts"] -= 2
 
 # Function to rent a game
 def rent_game(username):
@@ -75,9 +83,10 @@ def rent_game(username):
             display_available_games()
             display_balance(username)
             gameList = list(game_library.keys())
-            game_index = int(input(f"Enter the number of the game you want to rent (from 1 to {len(gameList)}): ")) - 1
+            game_index = input(f"Enter the number of the game you want to rent (from 1 to {len(gameList)}): ")
             if game_index == "":
                 return
+            game_index = int(game_index) - 1
             if game_index not in range(len(gameList)):
                 print(f"Please enter only a number from 1 to {len(gameList)}.")
                 input("Press Enter to continue...")
@@ -94,73 +103,10 @@ def rent_game(username):
             game_library[game]["quantity"] -= 1
             user_accounts[username]["balance"] -= game_library[game]["cost"]
             user_accounts[username]["points"] += game_library[game]["cost"] // 2
-            user_accounts[username]["excess_pts"] += game_library[game]["cost"] % 2
-            if user_accounts[username]["excess_pts"] == 2:
-                user_accounts[username]["points"] += 1
-                user_accounts[username]["excess_pts"] -= 2
+            excess_points_system(username, game)
             user_accounts[username]["inventory"].append(game)
             print(f"Rental Successful. Your remaining credits: {user_accounts[username]["balance"]}")
             input("Press Enter to continue...")
-        except ValueError:
-            print("Invalid Input. Please enter a valid input.")
-            input("Press Enter to continue...")
-        break
-
-# Function to return a game
-def return_game(username):
-    while True:
-        try:
-            separator()
-            display_available_games()
-            display_balance(username)
-            gameList = list(game_library.keys())
-            game_index = int(input(f"Enter the number of the game you want to rent (from 1 to {len(gameList)}): ")) - 1
-            if game_index == "":
-                return
-            if game_index not in range(len(gameList)):
-                print(f"Please enter only a number from 1 to {len(gameList)}.")
-                input("Press Enter to continue...")
-                continue
-            game = gameList[game_index]
-            if game_library[game]["quantity"] <= 0:
-                print("There are no available copies left for this game.")
-                input("Press Enter to continue...")
-                continue
-            if game_library[game]["cost"] > user_accounts[username]["balance"]:
-                print("You don't have enough credits. Please top-up.")
-                input("Press Enter to continue...")
-                return
-            game_library[game]["quantity"] -= 1
-            user_accounts[username]["balance"] -= game_library[game]["cost"]
-            user_accounts[username]["points"] += game_library[game]["cost"] // 2
-            user_accounts[username]["excess_pts"] += game_library[game]["cost"] % 2
-            if user_accounts[username]["excess_pts"] == 2:
-                user_accounts[username]["points"] += 1
-                user_accounts[username]["excess_pts"] -= 2
-            user_accounts[username]["inventory"].append(game)
-            print(f"Rental Successful. Your remaining credits: {user_accounts[username]["balance"]}")
-            input("Press Enter to continue...")
-        except ValueError:
-            print("Invalid Input. Please enter a valid input.")
-            input("Press Enter to continue...")
-        break
-
-# Function to top-up user account
-def top_up_account(username, amount):
-    while True:
-        try:
-            separator()
-            display_user_stash(username)
-            stash = user_accounts[username]["inventory"]
-            return_game = int(input(f"Enter the number of the game you want to return (from 1 to {len(stash)}): ")) - 1
-            if return_game == "":
-                return
-            if return_game not in range(len(stash)):
-                print(f"Please enter only a number from 1 to {len(stash)}.")
-                continue
-            game = stash[rent_game]
-            game_library[game]["quantity"] += 1
-            stash.pop(return_game)
         except ValueError:
             print("Invalid Input. Please enter a valid input.")
             input("Press Enter to continue...")
@@ -172,8 +118,51 @@ def display_user_stash(username):
     stash = user_accounts[username]["inventory"]
     if not stash:
         print("Your inventory is empty...")
-    for index, game in enumerate(stash.items(), start = 1):
+        return
+    for index, game in enumerate(stash(), start = 1):
         print(f"{index}. {game}")
+
+# Function to return a game
+def return_game(username):
+    while True:
+        try:
+            separator()
+            display_user_stash(username)
+            stash = user_accounts[username]["inventory"]
+            return_game = input(f"Enter the number of the game you want to return (from 1 to {len(stash)}): ")
+            if return_game == "":
+                return
+            return_game = int(return_game) - 1
+            if return_game not in range(len(stash)):
+                print(f"Please enter only a number from 1 to {len(stash)}.")
+                continue
+            game = stash[rent_game]
+            game_library[game]["quantity"] += 1
+            stash.pop(return_game)
+        except ValueError:
+            print("Invalid Input. Please enter a valid input.")
+            input("Press Enter to continue...")
+        break
+
+# Function to top-up user account
+def top_up_account(username):
+    while True:
+        try:
+            separator()
+            display_balance(username)
+            deposit = float(input("Enter the amount of credits you want to deposit: "))
+            if deposit == "":
+                return
+            if deposit <= 0:
+                print("You can only enter a positive amount.")
+                input("Press Enter to continue...")
+                continue
+            user_accounts[username]["balance"] += deposit
+            print("Deposit Successful.")
+            break
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
+            input("Press Enter to continue...")
 
 # Function for admin to update game details
 def admin_update_game(username):
@@ -218,7 +207,7 @@ def redeem_free_rental(username):
             game_library[game]["quantity"] -= 1
             user_accounts[username]["points"] -= 3
             user_accounts[username]["inventory"].append(game)
-            print(f"Rental Successful. Your remaining credits: {user_accounts[username]["points"]}")
+            print(f"Rental Successful. Your remaining points: {user_accounts[username]["points"]}")
             input("Press Enter to continue...")
         except ValueError:
             print("Invalid Input. Please enter a valid input.")
