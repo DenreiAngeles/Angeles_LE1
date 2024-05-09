@@ -187,9 +187,43 @@ def admin_login():
 def admin_menu():
     pass
 
+def display_points(username):
+    print(f"Points: {user_accounts[username]["points"]}")
+
 # Function for users to redeem points for a free game rental
 def redeem_free_rental(username):
-    pass
+    while True:
+        try:
+            separator()
+            display_available_games()
+            display_points(username)
+            gameList = list(game_library.keys())
+            print("Note: You can only redeem a free rental if you have atleast 3 points.")
+            game_index = int(input(f"Enter the number of the game you want to redeem (from 1 to {len(gameList)}): ")) - 1
+            if game_index == "":
+                return
+            if game_index not in range(len(gameList)):
+                print(f"Please enter only a number from 1 to {len(gameList)}.")
+                input("Press Enter to continue...")
+                continue
+            game = gameList[game_index]
+            if game_library[game]["quantity"] <= 0:
+                print("There are no available copies left for this game.")
+                input("Press Enter to continue...")
+                continue
+            if user_accounts[username]["points"] < 3:
+                print("You don't have enough points. Please rent a game to gain points.")
+                input("Press Enter to continue...")
+                return
+            game_library[game]["quantity"] -= 1
+            user_accounts[username]["points"] -= 3
+            user_accounts[username]["inventory"].append(game)
+            print(f"Rental Successful. Your remaining credits: {user_accounts[username]["points"]}")
+            input("Press Enter to continue...")
+        except ValueError:
+            print("Invalid Input. Please enter a valid input.")
+            input("Press Enter to continue...")
+        break
 
 # Function to display game inventory
 def display_game_inventory():
