@@ -18,7 +18,6 @@ def separator():
 
 # Function to display available games with their numbers and rental costs
 def display_available_games():
-    separator()
     print("Available Games:")
     for index, (games, details) in enumerate(game_library.items(), start = 1):
         copies = details["quantity"]
@@ -119,7 +118,7 @@ def display_user_stash(username):
     if not stash:
         print("Your inventory is empty...")
         return
-    for index, game in enumerate(stash(), start = 1):
+    for index, game in enumerate(stash, start = 1):
         print(f"{index}. {game}")
 
 # Function to return a game
@@ -136,9 +135,11 @@ def return_game(username):
             if return_game not in range(len(stash)):
                 print(f"Please enter only a number from 1 to {len(stash)}.")
                 continue
-            game = stash[rent_game]
+            game = stash[return_game]
             game_library[game]["quantity"] += 1
             stash.pop(return_game)
+            print("Game returned successfully.")
+            input("Press Enter to continue...")
         except ValueError:
             print("Invalid Input. Please enter a valid input.")
             input("Press Enter to continue...")
@@ -165,8 +166,100 @@ def top_up_account(username):
             input("Press Enter to continue...")
 
 # Function for admin to update game details
-def admin_update_game(username):
-    pass
+def admin_update_game():
+    while True:
+        try:
+            separator()
+            display_available_games()
+            print("Update Game Details:")
+            gameList = list(game_library.keys())
+            game_update = input(f"Enter the number of the game you want to update (from 1 to {len(gameList)}): ")
+            if game_update == "":
+                return
+            game_update = int(game_update) - 1
+            if game_update not in range(len(gameList)):
+                print(f"Please enter only a number from 1 to {len(gameList)}.")
+                input("Press Enter to continue...")
+                continue
+            game = gameList[game_update]
+            print("What would you like to update?")
+            print("1. Copies\n2. Price\n3. Exit")
+            choice = input("Number of your choice: ")
+            if choice == "1":
+                while True:
+                    new_quantity = int(input("Enter the new number of copies for this game: "))
+                    if new_quantity < 0:
+                        print("You can only input a positive number.")
+                        continue
+                    game_library[game]["quantity"] = new_quantity
+                    print("Game updated successfully.")
+                    input("press Enter to Continue...")
+                    break
+            elif choice == "2":
+                while True:
+                    new_price = float(input("Enter the new number of price for this game: "))
+                    if new_price < 0:
+                        print("You can only input a positive number.")
+                        continue
+                    game_library[game]["cost"] = new_price
+                    print("Game updated successfully.")
+                    input("press Enter to Continue...")
+                    break
+            elif choice == "3":
+                return
+            else:
+                print("Invalid input. Please enter a valid input.")
+                input("Press Enter to Continue...")
+        except ValueError:
+            print("Invalid input. Please enter a valid input.")
+            input("Press Enter to Continue...")
+
+def admin_add_game():
+    while True:
+        try:
+            separator()
+            print("Add a new game:")
+            game = input("Enter the title of the game (or Press Enter to exit): ")
+            if game == "":
+                return
+            elif game in game_library:
+                print("Game already exists in the library. Please enter a new game.")
+                input("Press Enter to Continue....")
+                continue
+            copies = int(input("Enter the number of copies for this game: "))
+            if copies <= 0:
+                print("You should have at least 1 copy.")
+                input("Press Enter to Continue....")
+                continue
+            price = float(input("Enter the price of this game: "))
+            if price < 0:
+                print("Price cannot be negative.")
+                input("Press Enter to Continue....")
+                continue
+            game_library[game] = {"quantity": copies, "cost": price }
+            print(f"{game} added successfully to the game library.")
+            input("Press Enter to Continue....")
+        except ValueError:
+            print("Invalid input. Please enter a valid input.")
+            input("Press Enter to Continue...")
+        break
+
+def admin_remove_game():
+    while True:
+        separator()
+        display_available_games()
+        print("Remove a Game:")
+        game = input("Enter the title of the game you want to remove (or Press Enter to exit): ")
+        if game == "":
+            return
+        elif game not in game_library:
+            print("Game not in the library. Please enter only a game from the library.")
+            input("Press Enter to Continue...")
+            continue
+        del game_library[game]
+        print(f"{game} removed successfully.")
+        input("Press Enter to Continue...")
+        break
 
 # Function for admin login
 def admin_login():
@@ -187,14 +280,15 @@ def admin_menu():
     while True:
         separator()
         print("Admin Menu:")
-        print("1. Display Games in Stock\n2. Update Game Details\n3. Log Out")
+        print("\n1. Update Game Details\n2. Add a Game\n3. Remove a Game\n4. Log Out")
         choice = input("Choose the number of the operation you want to do: ")
         if choice == "1":
-            display_available_games()
-            input("\nPress Enter to Continue...")
-        elif choice == "2":
             admin_update_game()
+        elif choice == "2":
+            admin_add_game()
         elif choice == "3":
+            admin_remove_game()
+        elif choice == "4":
             return
         else:
             print("Invalid input. Please enter a valid input.")
@@ -270,6 +364,7 @@ def main():
         print("1. Display Available Games\n2. Register\n3. Log In\n4. Admin Log In\n5. Exit ")
         choice = input("Enter the number of what you want to do: ")
         if choice == "1":
+            separator()
             display_available_games()
             input("\nPress Enter to Continue...")
         elif choice == "2":
@@ -279,7 +374,6 @@ def main():
             if login:
                 logged_in_menu(login)
         elif choice == "4":
-            admin_login()
             if admin_login() == True:
                 admin_menu()
         elif choice == "5":
