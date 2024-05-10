@@ -22,25 +22,38 @@ def display_available_games():
     for index, (games, details) in enumerate(game_library.items(), start = 1):
         copies = details["quantity"]
         cost = details["cost"]
-        print(f"{index}. {games}\n\t>>copies: {copies}\n\t>>cost: {cost}")
+        print(f"{index}. {games}\n\t>>copies: {copies}\n\t>>cost: ${cost}")
 
 # Function to register a new user
 def register_user():
-    separator()
-    print("Register:")
-    username = input("Enter New Username: ")
-    if username == "":
-        return
-    if username in user_accounts:
-        print("Username already taken. Please use another username.")
-        input("Press Enter to continue...")
-        return
-    password = input("Enter New Password: ")
-    if password == "":
-        return
-    user_accounts[username] = {"username": username, "password": password, "balance": 1.0, "points": 0, "excess_pts": 0, "inventory": []}
-    print("Account Successfully Created! Proceed to Login.")
-    input("Press Enter to continue...")
+    while True:
+        try:
+            separator()
+            print("Register:")
+            username = input("Enter New Username: ")
+            if username == "":
+                return
+            if username in user_accounts:
+                print("Username already taken. Please try again and use another username.")
+                input("Press Enter to continue...")
+                continue
+            password = input("Enter New Password: ")
+            if password == "":
+                return
+            initial_balance = float(input("Enter initial balance(minimum of $5): $"))
+            if initial_balance == "":
+                return
+            elif initial_balance < 5:
+                print("Initial balance cannot be less than $5. Please try again.")
+                input("Press Enter to continue...")
+                continue
+            user_accounts[username] = {"username": username, "password": password, "balance": initial_balance, "points": 0, "excess_pts": 0, "inventory": []}
+            print("Account Successfully Created! Proceed to Login.")
+            input("Press Enter to continue...")
+        except ValueError:
+            print("Invalid input. Please enter a valid input.")
+            input("Press Enter to continue...")
+        break
 
 def log_in_user():
     separator()
@@ -64,7 +77,7 @@ def log_in_user():
 
 def display_balance(username):
     balance = user_accounts[username]["balance"]
-    print(f"\nCredits: {balance:.2f}\n")
+    print(f"\nCredits: ${balance:.2f}\n")
 
 def excess_points_system(username, game):
     decimal_excess = game_library[game]["cost"] - int(game_library[game]["cost"])
@@ -104,7 +117,7 @@ def rent_game(username):
             user_accounts[username]["points"] += game_library[game]["cost"] // 2
             excess_points_system(username, game)
             user_accounts[username]["inventory"].append(game)
-            print(f"Rental Successful. Your remaining credits: {user_accounts[username]["balance"]}")
+            print(f"Rental Successful. Your remaining credits: ${user_accounts[username]["balance"]:.2f}")
             input("Press Enter to continue...")
         except ValueError:
             print("Invalid Input. Please enter a valid input.")
@@ -164,6 +177,12 @@ def top_up_account(username):
         except ValueError:
             print("Invalid input. Please enter a valid number.")
             input("Press Enter to continue...")
+
+def display_game_inventory():
+    print("Available Games:")
+    for index, (games, details) in enumerate(game_library.items(), start = 1):
+        copies = details["quantity"]
+        print(f"{index}. {games}\n\t>>stock: {copies}")    
 
 # Function for admin to update game details
 def admin_update_game():
@@ -280,9 +299,13 @@ def admin_menu():
     while True:
         separator()
         print("Admin Menu:")
-        print("\n1. Update Game Details\n2. Add a Game\n3. Remove a Game\n4. Log Out")
+        print("1. Game Inventory\n2. Update Game Details\n2. Add a Game\n3. Remove a Game\n4. Log Out")
         choice = input("Choose the number of the operation you want to do: ")
         if choice == "1":
+            separator()
+            display_game_inventory()
+            input("Press Enter to Continue...")
+        elif choice == "2":
             admin_update_game()
         elif choice == "2":
             admin_add_game()
@@ -338,7 +361,7 @@ def logged_in_menu(username):
         separator()
         print(f"Welcome Back, {username}!")
         print("What would you like to do today?")
-        print(f"\nCredits: {user_accounts[username]["balance"]}\tPoints: {user_accounts[username]["points"]}\n")
+        print(f"\nCredits: ${user_accounts[username]["balance"]:.2f}\tPoints: {user_accounts[username]["points"]}\n")
         print("1. Top Up\n2. Rent Games\n3. Return Games\n4. Redeem Free Rental\n5. Log Out")
         choice = input("Enter the number of what you want to do: ")
         if choice == "1":
@@ -359,10 +382,10 @@ def logged_in_menu(username):
 def main():
     while True:
         separator()
-        print("Rent-a-Game")
-        print("\nWelcome to Rent-a-Game! What would you like to do today?")
+        print("Rent-a-Game!")
+        print("\nWelcome to Rent-a-Game! What would you like to do today?\n")
         print("1. Display Available Games\n2. Register\n3. Log In\n4. Admin Log In\n5. Exit ")
-        choice = input("Enter the number of what you want to do: ")
+        choice = input("\nEnter the number of what you want to do: ")
         if choice == "1":
             separator()
             display_available_games()
