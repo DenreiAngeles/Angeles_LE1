@@ -165,9 +165,10 @@ def top_up_account(username):
         try:
             separator()
             display_balance(username)
-            deposit = float(input("Enter the amount of credits you want to deposit, or leave blank to cancel: "))
+            deposit = input("Enter the amount of credits you want to deposit, or leave blank to cancel: ")
             if deposit == "":
                 return
+            deposit = float(deposit)
             if deposit <= 0:
                 print("You can only enter a positive amount.")
                 input("Press Enter to continue...")
