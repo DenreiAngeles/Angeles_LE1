@@ -30,20 +30,21 @@ def register_user():
         try:
             separator()
             print("Register:")
-            username = input("Enter New Username: ")
+            username = input("Enter New Username, or leave blank to cancel: ")
             if username == "":
                 return
             if username in user_accounts:
                 print("Username already taken. Please try again and use another username.")
                 input("Press Enter to continue...")
                 continue
-            password = input("Enter New Password: ")
+            password = input("Enter New Password, or leave blank to cancel: ")
             if password == "":
                 return
-            initial_balance = float(input("Enter initial balance(minimum of $5): $"))
+            initial_balance = input("Enter initial balance(minimum of $5), or leave blank to cancel: $")
             if initial_balance == "":
                 return
-            elif initial_balance < 5:
+            initial_balance = float(initial_balance)
+            if initial_balance < 5:
                 print("Initial balance cannot be less than $5. Please try again.")
                 input("Press Enter to continue...")
                 continue
@@ -58,7 +59,7 @@ def register_user():
 def log_in_user():
     separator()
     print("Log In:")
-    username = input("Enter your username: ")
+    username = input("Enter your username, or leave blank to cancel: ")
     if username == "":
         return
     if username not in user_accounts:
@@ -66,7 +67,7 @@ def log_in_user():
         input("Press Enter to continue...")
         return
     while True:
-        password = input("Enter your password: ")
+        password = input("Enter your password, or leave blank to cancel: ")
         if password == "":
             return
         if password != user_accounts[username]["password"]:
@@ -95,7 +96,7 @@ def rent_game(username):
             display_available_games()
             display_balance(username)
             gameList = list(game_library.keys())
-            game_index = input(f"Enter the number of the game you want to rent (from 1 to {len(gameList)}): ")
+            game_index = input(f"Enter the number of the game you want to rent (from 1 to {len(gameList)}), or leave blank to cancel: ")
             if game_index == "":
                 return
             game_index = int(game_index) - 1
@@ -141,7 +142,7 @@ def return_game(username):
             separator()
             display_user_stash(username)
             stash = user_accounts[username]["inventory"]
-            return_game = input(f"Enter the number of the game you want to return (from 1 to {len(stash)}): ")
+            return_game = input(f"Enter the number of the game you want to return (from 1 to {len(stash)}), or leave blank to cancel: ")
             if return_game == "":
                 return
             return_game = int(return_game) - 1
@@ -164,7 +165,7 @@ def top_up_account(username):
         try:
             separator()
             display_balance(username)
-            deposit = float(input("Enter the amount of credits you want to deposit: "))
+            deposit = float(input("Enter the amount of credits you want to deposit, or leave blank to cancel: "))
             if deposit == "":
                 return
             if deposit <= 0:
@@ -192,7 +193,7 @@ def admin_update_game():
             display_available_games()
             print("Update Game Details:")
             gameList = list(game_library.keys())
-            game_update = input(f"Enter the number of the game you want to update (from 1 to {len(gameList)}): ")
+            game_update = input(f"Enter the number of the game you want to update (from 1 to {len(gameList)}), or leave blank to cancel: ")
             if game_update == "":
                 return
             game_update = int(game_update) - 1
@@ -203,10 +204,10 @@ def admin_update_game():
             game = gameList[game_update]
             print("What would you like to update?")
             print("1. Copies\n2. Price\n3. Exit")
-            choice = input("Number of your choice: ")
+            choice = input("Number of your choice, or leave blank to cancel: ")
             if choice == "1":
                 while True:
-                    new_quantity = int(input("Enter the new number of copies for this game: "))
+                    new_quantity = int(input("Enter the new number of copies for this game, or leave blank to cancel: "))
                     if new_quantity < 0:
                         print("You can only input a positive number.")
                         continue
@@ -216,7 +217,7 @@ def admin_update_game():
                     break
             elif choice == "2":
                 while True:
-                    new_price = float(input("Enter the new number of price for this game: "))
+                    new_price = float(input("Enter the new number of price for this game, or leave blank to cancel: "))
                     if new_price < 0:
                         print("You can only input a positive number.")
                         continue
@@ -238,19 +239,25 @@ def admin_add_game():
         try:
             separator()
             print("Add a new game:")
-            game = input("Enter the title of the game (or Press Enter to exit): ")
+            game = input("Enter the title of the game, or leave blank to cancel: ")
             if game == "":
                 return
             elif game in game_library:
                 print("Game already exists in the library. Please enter a new game.")
                 input("Press Enter to Continue....")
                 continue
-            copies = int(input("Enter the number of copies for this game: "))
+            copies = input("Enter the number of copies for this game, or leave blank to cancel: ")
+            if copies == "":
+                return
+            copies = int(copies)
             if copies <= 0:
                 print("You should have at least 1 copy.")
                 input("Press Enter to Continue....")
                 continue
-            price = float(input("Enter the price of this game: "))
+            price = input("Enter the price of this game, or leave blank to cancel: ")
+            if price == "":
+                return
+            price = float(price)
             if price < 0:
                 print("Price cannot be negative.")
                 input("Press Enter to Continue....")
@@ -284,11 +291,15 @@ def admin_remove_game():
 def admin_login():
     separator()
     print("Admin Log In:")
-    username = input("Enter Username: ")
+    username = input("Enter Username, or leave blank to cancel: ")
+    if username == "":
+        return
     if username != admin_username:
         print("Incorrect username.")
         return
-    password = input("Enter Password: ")
+    password = input("Enter Password, or leave blank to cancel: ")
+    if password == "":
+        return
     if password != admin_password:
         print("Incorrect password.")
         return
@@ -329,9 +340,10 @@ def redeem_free_rental(username):
             display_points(username)
             gameList = list(game_library.keys())
             print("Note: You can only redeem a free rental if you have atleast 3 points.")
-            game_index = int(input(f"Enter the number of the game you want to redeem (from 1 to {len(gameList)}): ")) - 1
+            game_index = input(f"Enter the number of the game you want to redeem (from 1 to {len(gameList)}), or leave blank to cancel: ")
             if game_index == "":
                 return
+            game_index = int(game_index) - 1
             if game_index not in range(len(gameList)):
                 print(f"Please enter only a number from 1 to {len(gameList)}.")
                 input("Press Enter to continue...")
