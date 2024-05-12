@@ -319,11 +319,11 @@ def admin_menu():
             input("Press Enter to Continue...")
         elif choice == "2":
             admin_update_game()
-        elif choice == "2":
-            admin_add_game()
         elif choice == "3":
-            admin_remove_game()
+            admin_add_game()
         elif choice == "4":
+            admin_remove_game()
+        elif choice == "5":
             return
         else:
             print("Invalid input. Please enter a valid input.")
